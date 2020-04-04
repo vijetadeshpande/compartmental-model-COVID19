@@ -13,7 +13,7 @@ import numpy as np
 file_path = r'/Users/vijetadeshpande/Documents/GitHub/compartmental-model-COVID19/rate_matrix.xlsx'
 
 # initialize model
-covid = EIRModel.EIRModel(initial_pop = np.array([40, 10, 0, 0, 0, 0, 0]), 
+covid = EIRModel.EIRModel(initial_pop = np.array([0, 40, 10, 0, 0, 0, 0, 0]), 
                           rate_matrix_file_path = file_path)
 
 # loop over some horizon
@@ -23,7 +23,9 @@ social_dist = 'no'
 for day in range(0, 40):
     if (day == 21 or day == 35):
         social_dist = ('yes' * int(day == 14)) + ('q' * int(day == 30))
-    for t in range(0, int(1/covid.unit_time)):
-        pop_cur = covid.forward(pop_prev, social_dist)
-        pop_prev = pop_cur
-        pop_cur = 0
+    # forward pass
+    pop_cur = covid.forward(pop_prev, social_dist)
+    pop_prev = pop_cur
+    # backward pass
+    covid.backward(day)
+
