@@ -188,7 +188,7 @@ class EIRModel:
         self.epi_markers['testing rate'].append(d_rate[0])
         
         # print
-        print(('Testing rate on day %f is: %f')%(day, d_rate[0][0]))
+        print(('Testing rate on day %i is: %f')%(day, d_rate[0][0]))
         
         # change rate matrix
         rate_mat = self.q

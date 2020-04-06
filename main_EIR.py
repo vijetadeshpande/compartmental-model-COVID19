@@ -25,17 +25,15 @@ for day in range(0, 8):
     covid.day_count = day
     covid.pop_day_start = pop_prev
     
-    # some assumptions
-    if (day == 21 or day == 35):
-        social_dist = ('yes' * int(day == 14)) + ('q' * int(day == 30))
+    # fit diagnosis rate for this day
+    covid.backward(day)
     
-    # forward pass
+    # forward pass to get population for next day
     pop_cur = covid.forward(pop_prev, social_dist)
     pop_prev = pop_cur
     
     # update instantaneous pop (this can also be used a initial population for the next day)
-    covid.pop_day_end = pop_prev
+    #covid.pop_day_end = pop_prev
     
-    # backward pass
-    covid.backward(day)
+    
 
