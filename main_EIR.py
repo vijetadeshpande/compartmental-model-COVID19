@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 # rate matrix file path
-file_path = r'/Users/vijetadeshpande/Documents/GitHub/compartmental-model-COVID19/rate_matrix.xlsx'
+file_path = r'/Users/vijetadeshpande/Documents/GitHub/compartmental-model-COVID19/rate_matrix_old.xlsx'
 
 # initialize model
 covid = EIRModel.EIRModel(initial_pop = np.array([0, 0, 4, 1, 0, 0, 0, 0]), 
@@ -33,7 +33,7 @@ for day in range(0, 8):
     pop_prev = pop_cur
     
     # update instantaneous pop (this can also be used a initial population for the next day)
-    #covid.pop_day_end = pop_prev
+    covid.pop_day_end = pop_prev
     
     
 

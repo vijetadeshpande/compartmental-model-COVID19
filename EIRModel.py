@@ -139,7 +139,7 @@ class EIRModel:
         rate_mat[s1_idx][s2_idx] = val
         
         # update diagonal element
-        rate_mat[s1_idx][s1_idx] = -1 * np.sum(rate_mat[s1_idx][s2_idx+1:])
+        rate_mat[s1_idx][s1_idx] = -1 * np.sum(rate_mat[s1_idx][s2_idx:])
         
         return rate_mat
         
