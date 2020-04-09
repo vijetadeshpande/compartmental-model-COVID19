@@ -159,12 +159,16 @@ class EIRModel:
         rate_mat = self.update_rate_par(rate_mat, 'symptomatic', 'diagnosed', d_rate)
         self.q = rate_mat
         
-        # forward pass
+        # new cases
         pop_end = self.forward(pop_start)
-        self.pop_day_end = pop_end
+        delta_pop = pop_end - pop_start
+        new_dia = delta_pop[self.compartment_index['diagnosed']]
+        
+        #self.pop_day_end = pop_end
         
         # predicted value of y_hat: predicted value of diagnoded cases
-        y_hat = np.array([pop_end[self.compartment_index['diagnosed']]])
+        #y_hat = np.array([pop_end[self.compartment_index['diagnosed']]])
+        y_hat = np.array([new_dia])
         
         return y_hat
         
