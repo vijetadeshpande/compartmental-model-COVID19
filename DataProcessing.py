@@ -37,11 +37,44 @@ dia_df['National recovered new'] = 0
 dia_df['National deceased cumulative'] = 0
 dia_df['National deceased new'] = 0
 
+# aux function
+def update_national_cases(row, day, state, var):
+    
+    # get cumulative number of 'var'
+    total = dia_df[var].loc[row]
+    
+    # check if cases have incread and by how much
+    if state_cur in cases[var].keys():
+        if cases[var][state_cur] < total:
+            new_cases = total - cases[var][state_cur]
+        else:
+            new_cases = 0
+        cases[var][state_cur] = total
+    else:
+        new_cases = total
+        cases[var][state_cur] = total
+    
+    # new name dictionary
+    cumu = new_name[var][0]
+    inci = new_name[var][1]
+    
+    # update confirmed cumulative and new
+    if row > 0:
+        dia_df[cumu].loc[row] = dia_df[cumu].loc[row-1] + new_cases
+    else:
+        dia_df[cumu].loc[row] = new_cases
+    dia_df[inci].loc[row] = new_cases
+    
+    return
+    
 
 # create a sequence for all cases in india
-state_total = {}
-state_rec = {}
-state_dec = {}
+cases = {'Confirmed': {},
+         'Deaths': {},
+         'Cured': {}}
+new_name = {'Confirmed': ['National confirmed cumulative', 'National confirmed new'],
+            'Deaths': ['National deceased cumulative', 'National deceased new'],
+            'Cured': ['National recovered cumulative', 'National recovered new']}
 date_prev = dia_df['Date'].iloc[0]
 day = 0
 #state_prev = dia_df['State/UnionTerritory'].loc[0]
@@ -51,25 +84,10 @@ for row in dia_df.index:
     
     # get current state and update cumulative number
     state_cur = dia_df['State/UnionTerritory'].loc[row]
-    total = dia_df['Confirmed'].loc[row]
     
-    # check if cases have incread and by how much
-    if state_cur in state_total.keys():
-        if state_total[state_cur] < total:
-            new_cases = total - state_total[state_cur]
-        else:
-            new_cases = 0
-        state_total[state_cur] = total
-    else:
-        new_cases = total
-        state_total[state_cur] = total
-    
-    # update confirmed cumulative and new
-    if row > 0:
-        dia_df['National confirmed cumulative'].loc[row] = dia_df['National confirmed cumulative'].loc[row-1] + new_cases
-    else:
-        dia_df['National confirmed cumulative'].loc[row] = new_cases
-    dia_df['National confirmed new'].loc[row] = new_cases
+    # update confirmed, deceases and recovered cases
+    for var in cases.keys():
+        update_national_cases(row, day, state_cur, var)
         
 # save csv
 dia_df.to_csv(os.path.join(path, 'calibration_data.csv'))

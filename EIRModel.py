@@ -37,19 +37,15 @@ class EIRModel:
                             'births': [],
                             'recoveries': [],
                             'deaths': [],
-                            'population instantaneous': None,
+                            'population': [],
                             'hospitalizations': [],
                             'testing rate': []
                 }
         self.pop_day_end = 0
         self.delta_population = 0
         
-        # what are we calibrating
-        decision_mat = np.zeros((len(self.compartments), len(self.compartments)))
-        asym, sym, bir = self.compartment_index['exposed'], self.compartment_index['symptomatic'], self.compartment_index['births']
-        decision_mat[asym][bir], decision_mat[sym][bir] = 1, 1
-        self.decision_var = decision_mat
-        self.calibration_data = [1, 3, 4, 8, 10, 15, 22, 34, 50]
+        # data for calibration (y_actual)
+        self.calibration_data = None
     
     def extract_val(self, com):
         delta_pop = self.delta_population
@@ -114,22 +110,6 @@ class EIRModel:
              
         return pop_cur
     
-    def calculate_error(self, desc_var):
-        # extract values
-        day = self.day_count
-        
-        # first do forward pass
-        pop_prev = self.pop_day_start
-        pop_est = self.forward(pop_prev)
-        
-        # extract data to match to
-        pop_act = self.calibration_data[day]
-        
-        # calculate squared error
-        err = mean_squared_error([pop_act], [pop_est[self.compartment_index['diagnosed']]])
-        
-        return err
-    
     def update_rate_par(self, rate_mat, s1, s2, val):
         
         # get index of states
@@ -161,10 +141,9 @@ class EIRModel:
         
         # new cases
         pop_end = self.forward(pop_start)
-        delta_pop = pop_end - pop_start
-        new_dia = delta_pop[self.compartment_index['diagnosed']]
-        
-        #self.pop_day_end = pop_end
+        dia, mild, severe = self.compartment_index['diagnosed'], self.compartment_index['non-severe cases'], self.compartment_index['severe cases']
+        new_dia = sum(pop_end[dia:severe+1]) - sum(pop_start[dia:severe+1])
+        #new_dia = delta_pop[self.compartment_index['diagnosed']]
         
         # predicted value of y_hat: predicted value of diagnoded cases
         #y_hat = np.array([pop_end[self.compartment_index['diagnosed']]])
