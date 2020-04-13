@@ -23,10 +23,10 @@ cumulative_deaths = deepcopy(data_cali.loc[:, ['day', 'National deceased cumulat
 cumulative_rec = deepcopy(data_cali.loc[:, ['day', 'National recovered cumulative']]).groupby(by = 'day').max()
 
 # rate matrix file path
-file_path = r'/Users/vijetadeshpande/Documents/GitHub/compartmental-model-COVID19/rate_matrix_old.xlsx'
+file_path = r'/Users/vijetadeshpande/Documents/GitHub/compartmental-model-COVID19/rate_matrix.xlsx'
 
 # initialize model
-covid = EIRModel.EIRModel(initial_pop = np.array([0, 0, 4, 0, 0, 0, 0, 0]), 
+covid = EIRModel.EIRModel(initial_pop = np.array([0, 0, 0, 4, 0, 0, 0, 0, 0]), 
                           rate_matrix_file_path = file_path)
 covid.calibration_data = new_infections.groupby(by = 'day').sum().loc[:, 'National confirmed new'].values
 
@@ -68,7 +68,7 @@ test_rate = covid.epi_markers['testing rate']
 index = 0
 for pop in pop_t:
     deaths.append(pop[len(pop)-1])
-    infections.append(sum(pop[3:6]))
+    infections.append(sum(pop[4:7]))
     rec.append(pop[6])
     testing.append(test_rate[index][0])
     index += 1
