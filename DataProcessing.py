@@ -15,6 +15,7 @@ from copy import deepcopy
 
 path = r'/Users/vijetadeshpande/Documents/GitHub/compartmental-model-COVID19/Data/India'
 all_files = glob.glob(path + "/*.csv")
+state = 'Maharashtra'
 
 data_dict = {}
 for filename in all_files:
@@ -26,8 +27,19 @@ for filename in all_files:
     data_dict[basename] = df
     del df
     
-# cases in punjab
-dia_df = deepcopy(data_dict['covid_19_india'])
+# cases
+def filter_df(df, state_extract = 'All'):
+    if state_extract == 'All':
+        df = df
+    else:
+        df = df.loc[df.loc[:, 'State/UnionTerritory'] == state, :]
+    
+    # reset index
+    df = df.reset_index()
+    
+    return df
+
+dia_df = filter_df(deepcopy(data_dict['covid_19_india']), state)
 dia_df['Date'] = pd.to_datetime(dia_df['Date'], format = '%d/%m/%y')
 dia_df['day'] = 0
 dia_df['National confirmed cumulative'] = 0
@@ -90,4 +102,4 @@ for row in dia_df.index:
         update_national_cases(row, day, state_cur, var)
         
 # save csv
-dia_df.to_csv(os.path.join(path, 'calibration_data.csv'))
+dia_df.to_csv(os.path.join(path, ('calibration_data_for_%s_state.csv')%(state)))
