@@ -12,9 +12,20 @@ from copy import deepcopy
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+
+# test positivity
+def test_pos_fraction(x):
+    
+    if x <= 0:
+        test_p = 0.001
+    else:
+        test_p = 0.0117*np.log(x) + 0.0025
+    
+    return test_p
+
 if True:
     # import data for calibration
-    path_data = r'/Users/vijetadeshpande/Documents/GitHub/compartmental-model-COVID19/Data/India/calibration_data_for_All_state.csv'
+    path_data = r'/Users/vijetadeshpande/Documents/GitHub/compartmental-model-COVID19/Data/India/calibration_data_for_Punjab_state.csv'
     data_cali = pd.read_csv(path_data)
     
     # extract data for calibration and visualization 
@@ -39,9 +50,12 @@ if True:
     max_day = data_cali.day.max() - data_cali.day.min()
     for day in range(0, max_day+1):
         
+        # set test positive fraction
+        covid.test_pos = test_pos_fraction(day)
+        
         if day == 53:
             rate_mat = covid.q
-            new_r0 = 1.5/10
+            new_r0 = 1.2/10
             rate_mat[[2,3,4,5], 0] = new_r0
             covid.q = rate_mat
         
